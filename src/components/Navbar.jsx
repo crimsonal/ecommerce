@@ -1,25 +1,35 @@
-const Navbar = () => {
-    return (
-        <nav className="flex bg-blue-500 shadow-md fixed w-full top-0">
-            <div className="navbar-left mx-3">
-                <img className= "w-12" src="src/assets/shop.png" />
-            </div>
-            <div className="flex font-bold items-center menu">
-                <ul className="flex gap-4 my-4">
-                    <li>Shop</li>
-                    <li>About</li>
-                    <li>Contact</li>
-                </ul>
-            </div>
-            <div className="navbar-left flex font-bold items-center right-0">
-                <ul className="flex gap-4">
-                    <li>Login</li>
-                    <li>Signup</li>
-                </ul>
-            </div>
-        </nav>
+import {Link} from "react-router-dom"
 
-    )
+const Navbar = () => {
+  return (
+    <nav className="top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-blue-500 shadow-md">
+      <div className="navbar-left mx-3">
+        <Link to="/">
+          <img className="w-12" src="src/assets/shop.png" />
+        </Link>
+      </div>
+      <div className="menu flex items-center font-bold">
+        <ul className="flex gap-4">
+          <li>
+            <Link to="/shop">Shop</Link>  
+          </li>
+          <li>
+            <Link to="/about">About</Link>
+          </li>
+          <li>
+            <Link to="/contact">Contact</Link>
+          </li>
+        </ul>
+      </div>
+      <div className="navbar-left mx-3 flex items-center font-bold">
+        <ul className="flex gap-4">
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  )
 
 }
 
