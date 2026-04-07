@@ -12,6 +12,12 @@ phases:
     commands:
       - echo Building the React app...
       - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Invalidating CloudFront cache...
+      - aws cloudfront create-invalidation --distribution-id E1PNF9YEPZ7C4M --paths "/*"
+
 
 artifacts:
   files:
