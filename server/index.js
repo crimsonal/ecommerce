@@ -1,7 +1,7 @@
 import express from 'express';
 import authRoutes from './routes/auth.js';
 const app = express();
-const PORT = 3000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 app.get('/', (req, res) => {
   res.send('E-Commerce API is running');
