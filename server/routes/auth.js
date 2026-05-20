@@ -58,13 +58,14 @@ router.post('/login', async (req, res) => {
     } 
 
     
-    const c = false //await bcrypt.compare(password, rows[0].password_hash)
-    console.log(c)
+    const c = await bcrypt.compare(password, rows[0].password_hash)
     if ( !c ){
       return res.status(401).send({ success:false, message: "Incorrect password" })
     }
 
-    res.send({ success: true, message: "Successfully signed in" })
+    const token = generateToken(rows[0].id, rows[0].email)
+
+    res.send({ success: true, token: token, message: "Successfully signed in" })
 
   } catch (err) {
     res.status(500).send({ success: false, message: "Error logging in", error: err.message })
@@ -74,10 +75,5 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (req, res) => {
   res.send('User logout endpoint');
 }); 
-
-router.get('/profile', (req, res) => {
-  res.send('User profile endpoint');
-});
-
 
 export default router
