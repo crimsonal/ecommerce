@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoutes from './routes/auth.js';
 import productRouters from "./routes/products.js"
+import shopRouters from "./routes/shop.js"
 import auth from "./middleware/auth.js"
 import {pool} from "./scripts/connection.js"
 const app = express();
@@ -22,17 +23,17 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/products", auth, productRouters)
-
+app.use("/api/shop", auth, shopRouters)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 
-  try { 
-    const connection = pool.getConnection()
-    console.log("Pool connection established")
-  } catch (err) {
-    console.error("Failed to connect to the pool: ", err.message)
-  }
+  // try { 
+  //   const connection = pool.getConnection()
+  //   console.log("Pool connection established")
+  // } catch (err) {
+  //   console.error("Failed to connect to the pool: ", err.message)
+  // }
 });
 
 process.on("SIGINT", shutdown)

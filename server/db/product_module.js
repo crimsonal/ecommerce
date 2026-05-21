@@ -1,0 +1,44 @@
+import { pool } from "../scripts/connection.js"
+
+
+export default async function addProduct (userId, {product_name, product_description, product_image}) {
+    
+    try {
+        await pool.query("INSERT INTO products(product_name, product_description, product_image, user_id) VALUES (?, ?, ?, ?)", [product_name, product_description, product_image, userId])
+
+    } catch (err) {
+        return {success: false, error: err}
+    }
+
+    return {success: true}
+}
+
+export async function userOwnsProduct(userId, productId) {
+
+    try { 
+        const [rows] = await pool.query("SELECT * FROM products WHERE products.user_id = ? AND products.id = ?", [userId, productId])
+
+        if (rows.length !== 0) {
+            return {success: true}
+        }
+    } catch (err) {
+        return {success: false, error: err}
+    }
+
+    return {success: false, message: "User does not own product"}
+}
+
+export async function removeProduct(productId) {
+
+    try {
+
+        await pool.query("DELETE FROM products WHERE products.id = ? ", [productId])
+
+        return {success: true}
+
+    } catch (err) {
+        return {success: false, error: err}
+    }
+
+    return {success: false, message: "Failed to remove product"}
+}
