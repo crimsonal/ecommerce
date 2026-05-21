@@ -1,5 +1,7 @@
 import express from 'express';
 import authRoutes from './routes/auth.js';
+import productRouters from "./routes/products.js"
+import auth from "./middleware/auth.js"
 import {pool} from "./scripts/connection.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use("/api/products", auth, productRouters)
 
 
 app.listen(PORT, () => {
