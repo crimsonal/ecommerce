@@ -5,13 +5,13 @@ const Navbar = ({cart}) => {
     <nav className="top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-blue-500 shadow-md">
       <div className="navbar-left mx-3">
         <Link to="/">
-          <img className="w-12" src="src/assets/shop.png" />
+          Nova Market
         </Link>
       </div>
       <div className="menu flex items-center font-bold">
-        <ul className="flex gap-4">
+        <ul className="group flex gap-4 hover:*:bg-black/10 hover:*:rounded-lg" >
           <li>
-            <Link to="/shop">Shop</Link>  
+            <Link className="" to="/shop">Shop</Link>  
           </li>
           <li>
             <Link to="/about">About</Link>
