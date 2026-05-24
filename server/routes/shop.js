@@ -24,7 +24,6 @@ router.post("/", async(req, res) => {
         const query = await addProductToShop(Number(product_id), req.user.userId, Number(price))
         console.log(query)
         if (!query.success) {
-            console.log("Failure")
             return res.status(400).send({...query, message: "Failed to add product to shop"})
         }
 

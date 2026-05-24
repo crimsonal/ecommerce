@@ -14,6 +14,7 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "axios": "^1.16.1",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -21,7 +22,8 @@
     "mysql2": "^3.22.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "tailwindcss-font-inter": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

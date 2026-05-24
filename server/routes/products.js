@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.delete("/", async (req, res) => {
+router.delete("/", async (req, res) => { // TODO: path parameter for id
 
     try {
         const {product_id} = req.body
