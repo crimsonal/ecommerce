@@ -3,6 +3,7 @@ import authRoutes from './routes/auth.js';
 import productRouters from "./routes/products.js"
 import shopRouters from "./routes/shop.js"
 import auth from "./middleware/auth.js"
+import cors from "cors"
 import {pool} from "./scripts/connection.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,10 +21,12 @@ app.get('/', (req, res) => {
   res.send('E-Commerce API is running');
 });
 
+
+app.use(cors())
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/products", auth, productRouters)
-app.use("/api/shop", auth, shopRouters)
+app.use("/api/shop", shopRouters)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

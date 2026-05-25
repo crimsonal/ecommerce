@@ -1,6 +1,6 @@
 import e from "express";
 import { userOwnsProduct } from "../db/product_module.js";
-import addProductToShop from "../db/shop_module.js";
+import {addProductToShop, getShop} from "../db/shop_module.js"
 const router = e.Router()
 
 router.post("/", async(req, res) => {
@@ -22,7 +22,6 @@ router.post("/", async(req, res) => {
         }
 
         const query = await addProductToShop(Number(product_id), req.user.userId, Number(price))
-        console.log(query)
         if (!query.success) {
             return res.status(400).send({...query, message: "Failed to add product to shop"})
         }
@@ -31,6 +30,16 @@ router.post("/", async(req, res) => {
 
     } catch (err) {
         res.status(500).send({success: false, message: "Error adding product to shop", error: err.message})
+    }
+})
+
+router.get("/", async(req, res) => {
+    try {
+        const query = await getShop()
+
+        res.send ({...query, message: "Success"})
+    } catch (err) {
+        res.status(500).send( {success: false, message: "Failed to retrieve shop items", error: err.message})
     }
 })
 
