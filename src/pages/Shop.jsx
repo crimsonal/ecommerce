@@ -1,4 +1,5 @@
 import { useState } from "react"
+import api from "../api/client.js"
 import ItemCard from "../components/ItemCard"
 const Shop = () => {
     const [searchText, setSearchText] = useState("")
@@ -6,7 +7,7 @@ const Shop = () => {
         {name: "Pencil", price: 1.99, description:"Writing utensil"},
 
     ]
-
+    console.log(api.get("/shop"))
     const handleSearchText = (event) => {
         setSearchText(event.target.value)
     }
@@ -21,7 +22,7 @@ const Shop = () => {
 
             <div className="flex items-block w-full flex-grow p-10 border-solid border-gray-400">
                 {items.map((card) => (
-                    <ItemCard name={card.name} price={card.price} description={card.description}/>
+                    <ItemCard key= {card.toString() }name={card.name} price={card.price} description={card.description}/>
                 ))}
             </div>
 

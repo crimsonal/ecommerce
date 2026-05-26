@@ -1,6 +1,10 @@
 import jwt from "jsonwebtoken";
 
 export default function check(req, res, next) {
+
+    // if (req.method === "GET") { // retrieving data should not require authentication.
+    //     next()
+    // }
     const authHeader = req.headers["authorization"]
 
     if (!authHeader) {

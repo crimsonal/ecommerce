@@ -26,7 +26,7 @@ app.use(cors())
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/products", auth, productRouters)
-app.use("/api/shop", shopRouters)
+app.use("/api/shop", auth, shopRouters)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
