@@ -26,15 +26,18 @@ const Navbar = ({cart}) => {
           <li>
             <Link to="/cart">
               <div className="relative w-max hover:-translate-y-1 transition-transform duration-300 ease-in-out">
-                <img src="src/assets/shopping-bag.png" className="block w-8"></img>
+                <img src="/assets/shopping-bag.png" className="block w-8"></img>
                 <div className="absolute inset-0 flex -ml-1.5 -mb-1.5 items-center justify-center">
                   <h2 className="text-white">0</h2>
                 </div>
               </div>
             </Link>
           </li>
-          <li className="hover:*:rounded-lg hover:*:bg-black/10">
-            <Link className="relative" to="/login">Login</Link>
+          <li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10">
+            <Link className="text-center" to="/login">Login</Link>
+          </li>
+          <li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10">
+            <Link className="text-center" to="/signup">Signup</Link>
           </li>
         </ul>
       </div>
