@@ -12,9 +12,7 @@ const Login = () => {
     return (
         <div className="flex flex-col w-full h-full overflow-hidden p-5">
                 <Card title="Login">
-                    <div>
-                        Error
-                    </div>
+                    <div></div>
                     <form>
                         <label className="block text-sm font-medium text-bg-500">Email</label>
                         <div>

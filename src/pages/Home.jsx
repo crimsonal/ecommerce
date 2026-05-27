@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <div className="w-full h-full overflow-hidden">
             <div className="mx-20 my-40 w-96">
-                <p className="text-3xl">
+                <p className="text-3xl font-light">
                     {tagLine}
                 </p>
                 <button onClick={() => navigate('/shop')} className="mx-10 my-4 w-60 h-8 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none focus:ring-blue-300 text-white rounded-md text-lg box-border border border-transparent focus:ring-4 shadow-xs rounded-base">

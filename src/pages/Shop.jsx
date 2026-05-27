@@ -7,7 +7,6 @@ const Shop = () => {
         {name: "Pencil", price: 1.99, description:"Writing utensil"},
 
     ]
-    console.log(api.get("/shop"))
     const handleSearchText = (event) => {
         setSearchText(event.target.value)
     }
@@ -25,7 +24,6 @@ const Shop = () => {
                     <ItemCard key= {card.toString() }name={card.name} price={card.price} description={card.description}/>
                 ))}
             </div>
-
         </div>
 
     )

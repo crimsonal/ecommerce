@@ -3,27 +3,70 @@ import Card from "../components/Card"
 import api from "../api/client.js"
 const Signup = () => {
     const [email, setEmail] = useState("")
-    const [password1, setPassword1] = useState("")
-    const [password2, setPassword2] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirm, setConfirm] = useState("")
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
     
 
     const handleClear = () => {
         setEmail("")
-        setPassword1("")
-        setPassword2("")
+        setPassword("")
+        setConfirm("")
         setError(null)
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setError(null)
+        setSuccess(null)
+        
+        const trimmedEmail = email.trim().toLowerCase()
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        if (!trimmedEmail || !password || !confirm) {
+            setError("Email, password, and confirm passwod are required.")
+            return;
+        }
+
+        if (!emailRegex.test(trimmedEmail)) {
+            setError("Please enter a valid email address.")
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters.")
+            return;
+        }
+
+        if (password !== confirm) {
+            setError("Passwords do not match.")
+            return;
+        }
+
+        setLoading(true)
+        try{
+            await api.post("/auth/register/", {
+                email: trimmedEmail,
+                password: password
+            })
+            setSuccess("Account created. You can log in now.")
+            setPassword("")
+            setConfirm("")
+        } catch(e) {
+            setError(`${e}`)
+        } finally {
+            setLoading(false)
+        }
+        setLoading(false)
+        
     }
     return (
         <div className="flex flex-col w-full h-full p-5 overflow-hidden">
             <Card title="Signup">
                 {error && <div className="text-red-500 mb-3 -mt-2">❌ Error: {error}</div>}
+                {success && <div className="text-green-700 mb-3 -mt-2">✅ Success: {success}</div>}
                 <form>
                     <label className="block text-sm font-medium text-bg-500">Email</label>
                     <div>
@@ -38,8 +81,8 @@ const Signup = () => {
                     <div>
                         <input
                         type="password"
-                        value={password1}
-                        onInput={(e) => setPassword1(e.target.value)}
+                        value={password}
+                        onInput={(e) => setPassword(e.target.value)}
                         placeholder="Password"
                         className="w-full bg-transparent px-3 py-3 text-sm outline-none">
                         </input>
@@ -49,8 +92,8 @@ const Signup = () => {
                     <div>
                         <input
                         type="password"
-                        value={password2}
-                        onInput={(e) => setPassword2(e.target.value)}
+                        value={confirm}
+                        onInput={(e) => setConfirm(e.target.value)}
                         placeholder="Repeat password"
                         className="w-full bg-transparent px-3 py-3 text-sm outline-none">
                         </input>
@@ -60,7 +103,7 @@ const Signup = () => {
                         <button 
                         type="submit"
                         onClick={handleSubmit}>
-                            Signup
+                            { !loading ? "Signup" : "Creating.."}
                         </button>
                         <button
                         type="button"
