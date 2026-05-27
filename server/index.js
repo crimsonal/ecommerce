@@ -3,6 +3,7 @@ import authRoutes from './routes/auth.js';
 import productRouters from "./routes/products.js"
 import shopRouters from "./routes/shop.js"
 import auth from "./middleware/auth.js"
+import profileRouters from "./routes/profile.js"
 import cors from "cors"
 import {pool} from "./scripts/connection.js"
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/products", auth, productRouters)
 app.use("/api/shop", auth, shopRouters)
+app.use("/api/user", auth, profileRouters)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

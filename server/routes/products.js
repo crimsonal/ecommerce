@@ -1,12 +1,12 @@
 import e from "express"
 import { pool } from "../scripts/connection.js"
-import doesUserExist, * as user_module from "../db/user_module.js"
+import {doesUserExist} from "../db/user_module.js"
 import addProduct, { removeProduct, userOwnsProduct } from "../db/product_module.js"
 const router = e.Router()
 
 router.post("/", async (req, res) => {
     try {
-        const {product_name, product_description, product_image} = req.body 
+        const {product_name, product_descåription, product_image} = req.body 
         if (!product_name || !product_description || !product_image) {
             return res.status(400).send({success: false, message: "product_name, product_description, and product_image required"})
         }

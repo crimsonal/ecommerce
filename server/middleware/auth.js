@@ -5,6 +5,7 @@ export default function check(req, res, next) {
     // if (req.method === "GET") { // retrieving data should not require authentication.
     //     next()
     // }
+    console.log("check")
     const authHeader = req.headers["authorization"]
 
     if (!authHeader) {
@@ -19,6 +20,7 @@ export default function check(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET) 
+        console.log(decoded)
         req.user = decoded 
         next()
     } catch (err) {
