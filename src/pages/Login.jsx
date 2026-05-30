@@ -1,19 +1,70 @@
 import Card from "../components/Card"
 import { useCallback, useState } from "react"
-const Login = () => {
+import { useNavigate } from "react-router-dom"
+import api from "../api/client.js"
+import { setToken } from "../api/auth.js"
+const Login = ({onLoggedIn}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(false)
-
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
     const handleClear = useCallback( () => {
         setEmail("")
         setPassword("")
+        setError(null)
     })
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setError(null)
+
+        const trimmedEmail = email.trim().toLowerCase();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+
+        if (!trimmedEmail || !password) {
+            setError("Email and password are required.")
+            return;
+        }
+
+        if (!emailRegex.test(trimmedEmail)) {
+            setError("Please enter a valid email address.")
+        }
+
+        setLoading(true)
+
+        try {
+            const loginRes = await api.post("/auth/login/", {
+                email: trimmedEmail,
+                password: password
+            })
+            if (!loginRes.data.token) {
+                throw new Error ("No token available for user")
+            }
+            setToken(loginRes.data.token)
+            const me = await api.get("/user/me/")
+            const user = {
+                id: me.data.id,
+                email: me.data.email
+            }
+            onLoggedIn(user)
+
+            navigate("/shop")
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+
+
+    }
     return (
         <div className="flex flex-col w-full h-full overflow-hidden p-5">
                 <Card title="Login">
                     <div></div>
                     <form>
+                        {error && <div className="text-red-500 mb-3 -mt-2">❌ Error: {error}</div>}
                         <label className="block text-sm font-medium text-bg-500">Email</label>
                         <div>
                             <input type="email"
@@ -39,7 +90,8 @@ const Login = () => {
 
                         <div className="flex items-center gap-3 pt-2">
                             <button
-                            type="submit">Login</button>
+                            type="submit"
+                            onClick={handleSubmit}>{loading ? "Signing in..." : "Login"}</button>
                             <button
                             type="button"
                             onClick={handleClear}

@@ -1,7 +1,7 @@
 import { pool } from "../scripts/connection.js"
 
 
-export default async function addProduct (userId, {product_name, product_description, product_image}) {
+export async function addProduct (userId, {product_name, product_description, product_image}) {
     
     try {
         await pool.query("INSERT INTO products(product_name, product_description, product_image, user_id) VALUES (?, ?, ?, ?)", [product_name, product_description, product_image, userId])
@@ -41,4 +41,16 @@ export async function removeProduct(productId) {
     }
 
     return {success: false, message: "Failed to remove product"}
+}
+
+export async function getProduct(productId) {
+    try {
+        const [rows] = await pool.query("SELECT * FROM products WHERE products.id = ?", [productId])
+
+        return {...rows[0], success: true}
+    } catch (err) {
+        return {success: false, message: err.message}
+    }
+
+    return {success: false, message: "Failed to find product"}
 }

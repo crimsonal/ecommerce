@@ -41,7 +41,6 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  console.log("req")
   try {
 
     const {email, password} = req.body 
@@ -57,16 +56,13 @@ router.post('/login', async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).send( {success: false, message: "User does not exist"} )
     } 
-    console.log("user exists")
     
     const c = await bcrypt.compare(password, rows[0].password_hash)
     if ( !c ){
       return res.status(401).send({ success:false, message: "Incorrect password" })
     }
-    console.log("password correct")
 
     const token = generateToken(rows[0].id, rows[0].email)
-    console.log(token)
     res.send({ success: true, token: token, message: "Successfully signed in" })
 
   } catch (err) {

@@ -1,7 +1,7 @@
 import e from "express"
 import { pool } from "../scripts/connection.js"
 import {doesUserExist} from "../db/user_module.js"
-import addProduct, { removeProduct, userOwnsProduct } from "../db/product_module.js"
+import { addProduct, removeProduct, userOwnsProduct, getProduct } from "../db/product_module.js"
 const router = e.Router()
 
 router.post("/", async (req, res) => {
@@ -24,6 +24,29 @@ router.post("/", async (req, res) => {
         res.send({success: true, message: "Product added successfully"})
     } catch (err) {
         res.status(500).send({success:false, message: "Error adding product", error: err.message})
+    }
+})
+
+router.get("/:id", async(req, res) => {
+
+    try {
+        const id = req.params.id 
+
+        if (!id) {
+            return res.status(400).send({success: false, message: "id is required"})
+        }
+
+        const query = await getProduct(id)
+
+        if (!query.success) {
+            return res.status(404).send({...query, message: "Product not found"})
+        }
+        
+        res.send(query)
+
+
+    } catch (err) {
+        res.status(500).send({success: false, message: "Something went wrong", error: err.message})
     }
 })
 

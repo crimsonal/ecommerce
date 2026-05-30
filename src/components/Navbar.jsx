@@ -33,12 +33,15 @@ const Navbar = ({cart, user, onLogout}) => {
               </div>
             </Link>
           </li>
-          <li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10">
+          {user ?
+          <><li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10 hover:cursor-pointer" onClick={onLogout}>Logout</li></>
+          :<><li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10">
             <Link className="text-center font-light" to="/login">Login</Link>
           </li>
           <li className="flex items-center justify-center hover:*:rounded-lg hover:*:bg-black/10">
             <Link className="text-center font-light" to="/signup">Signup</Link>
-          </li>
+          </li></>}
+          
         </ul>
       </div>
     </nav>

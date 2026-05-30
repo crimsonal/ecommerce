@@ -15,15 +15,18 @@ const api = axios.create({
     headers: {"Content-Type": "application/json"}
 })
 
-axios.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
     const token = getToken()
-
     if (token) {
-        config.headers.Authorization = $`Bearer ${token}`
+        config.headers = {
+            ...config.headers,
+            'Authorization': `Bearer ${token}`
+        }
     }
-
     return config
-}, (error) => {})
+}, (error) => {
+    return Promise.reject(error)
+})
 
 
 export default api
