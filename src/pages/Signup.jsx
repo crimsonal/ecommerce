@@ -3,6 +3,7 @@ import Card from "../components/Card"
 import api from "../api/client.js"
 const Signup = () => {
     const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [confirm, setConfirm] = useState("")
     const [loading, setLoading] = useState(false)
@@ -13,6 +14,7 @@ const Signup = () => {
     const handleClear = () => {
         setEmail("")
         setPassword("")
+        setUsername("")
         setConfirm("")
         setError(null)
     }
@@ -24,19 +26,32 @@ const Signup = () => {
         
         const trimmedEmail = email.trim().toLowerCase()
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
 
-        if (!trimmedEmail || !password || !confirm) {
-            setError("Email, password, and confirm passwod are required.")
+        if (!trimmedEmail || !password || !confirm || !username) {
+            setError("Email, username, password, and confirm passwod are required.")
             return;
         }
+
+
 
         if (!emailRegex.test(trimmedEmail)) {
             setError("Please enter a valid email address.")
             return;
         }
 
+        if (!usernameRegex.test(username)) {
+            setError("Only alphanumeric characters are allowed in username.")
+            return;
+        }
+
         if (password.length < 6) {
             setError("Password must be at least 6 characters.")
+            return;
+        }
+
+        if (username.length < 6) {
+            setError("Username must be at least 6 characters.")
             return;
         }
 
@@ -49,6 +64,7 @@ const Signup = () => {
         try{
             await api.post("/auth/register/", {
                 email: trimmedEmail,
+                username: username,
                 password: password
             })
             setSuccess("Account created. You can log in now.")
@@ -75,6 +91,16 @@ const Signup = () => {
                                 onInput={(e) => setEmail(e.target.value)}
                                 placeholder="user@domain.com"
                                 className="w-full bg-transparent px-3 py-3 outline-none text-sm">
+                        </input>
+                    </div>
+                    <label className="block text-sm font-medium text-bg-500">Username</label>
+                    <div>
+                        <input
+                        type="text"
+                        value={username}
+                        onInput={(e)=> setUsername(e.target.value)}
+                        placeholder="Username"
+                        className="w-full bg-transparent px-3 py-3 outline-none text-sm">
                         </input>
                     </div>
                     <label className="block text-sm font-medium text-bg-500">Password</label>

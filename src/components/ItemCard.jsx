@@ -1,4 +1,4 @@
-const ItemCard = ({name, price, description}) => {
+const ItemCard = ({name, price, description, seller}) => {
     return (
         <div className="flex flex-col p-2 h-60 w-40 bg-gray-300 rounded-md shadow m-2">
             <h3>{name}</h3>

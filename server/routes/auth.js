@@ -17,10 +17,10 @@ const generateToken = (userId, email) => {
 router.post('/register', async (req, res) => {
   
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
 
     if (!email || !password) {
-      return res.send({ success: false, message: 'Email and password is required' });
+      return res.send({ success: false, message: 'Email, username, and password is required' });
     }
 
     // check if user doesn't already exist in the database
@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
 
     const password_hash = await encryptPassword(password);
 
-    await pool.query("INSERT INTO users (email, password_hash) VALUES (?, ?)", [email, password_hash])
+    await pool.query("INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)", [email, username, password_hash])
     res.send({ success: true, message: 'User registered successfully' });
   } catch (err) {
     res.status(500).send({ success: false, message: 'Error registering user', error: err.message });

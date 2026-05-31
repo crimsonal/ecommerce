@@ -16,7 +16,7 @@ export async function getUser(id) {
 
 
     try {
-        const [rows] = await pool.query("SELECT id, email FROM users WHERE id = ?", [id])
+        const [rows] = await pool.query("SELECT id, email, username FROM users WHERE id = ?", [id])
 
         if (rows.length !== 0) {
             return rows[0]
