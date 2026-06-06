@@ -11,6 +11,7 @@ import Signup from './pages/Signup'
 import { getToken, clearToken } from './api/auth.js'
 import api from './api/client.js'
 import { useState, useEffect } from 'react'
+import Sell from './pages/Sell.jsx'
 
 function App() {
 
@@ -59,6 +60,7 @@ function App() {
         <Route path="/login" element={<Login onLoggedIn={setUser}/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/sell" element={<Sell />} />
       </Routes>
     </div>
   )
