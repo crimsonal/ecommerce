@@ -3,7 +3,7 @@ import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import api from "../api/client.js"
 import { setToken } from "../api/auth.js"
-const Login = ({onLoggedIn}) => {
+const Login = ({onLoggedIn, setInitial}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(false)
@@ -46,9 +46,12 @@ const Login = ({onLoggedIn}) => {
             const me = await api.get("/user/me/")
             const user = {
                 id: me.data.id,
-                email: me.data.email
+                email: me.data.email,
+                username: me.data.username
             }
             onLoggedIn(user)
+
+            setInitial( user.username ? user.username.substring(0, 1).toUpperCase() : "👤")
 
             navigate("/shop")
         } catch (err) {

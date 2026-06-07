@@ -16,31 +16,31 @@ import Sell from './pages/Sell.jsx'
 function App() {
 
   const [user, setUser] = useState(null)
+  const [initial, setInitial] = useState("👤")
   const navigate = useNavigate()
-  // useEffect(() => {console.log(user)}, [user])
-  // useEffect( () => {
-  //   (async () => {
-  //     console.log("a")
-  //     try {
-  //     const token = getToken()
-  //     console.log("lol")
-  //     console.log(token)
-  //     if (!token) {
-  //       setUser(null)
-  //       return;
-  //     }
-  //     console.log("user exists")
-  //     const me = await api.get("/user/me/")
-  //     setUser(me)
-  //     } catch (e) {
-  //       clearToken()
-  //       setUser(null)
-  //     }
+  useEffect(() => {console.log(user)}, [user])
+  useEffect( () => {
+    (async () => {
+      try {
+      const token = getToken()
+      if (!token) {
+        setUser(null)
+        return;
+      }
+      const me = await api.get("/user/me/")
+      setUser(me.data)
+      console.log(me.data)
+      setInitial( me.data.username ? me.data.username.substring(0, 1).toUpperCase() : "👤")
+      } catch (e) {
+        console.log(e)
+        clearToken()
+        setUser(null)
+      }
 
 
-  //   })
+    })()
     
-  // }, [user])
+  }, [])
 
 
   const handleLogout = () => {
@@ -51,13 +51,13 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar user={user} onLogout={handleLogout}></Navbar>
+      <Navbar user={user} initial={initial} onLogout={handleLogout}></Navbar>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/shop" element={<Shop />} />
+        <Route path="/shop" element={<Shop user={user}/>} />
         <Route path="/about" element={<About />} /> 
         <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login onLoggedIn={setUser}/>} />
+        <Route path="/login" element={<Login onLoggedIn={setUser} setInitial={setInitial}/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/sell" element={<Sell />} />
