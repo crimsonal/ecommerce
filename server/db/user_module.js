@@ -23,7 +23,6 @@ export async function getUser(id) {
         }
 
         return {success: false, message: "User does not exist"}
-
     } catch (err) {
         return {success: false, error: err}
     }
