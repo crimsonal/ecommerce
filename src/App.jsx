@@ -29,7 +29,6 @@ function App() {
       }
       const me = await api.get("/user/me/")
       setUser(me.data)
-      console.log(me.data)
       setInitial( me.data.username ? me.data.username.substring(0, 1).toUpperCase() : "👤")
       } catch (e) {
         console.log(e)
@@ -50,7 +49,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen scrollbar-none overflow-hidden">
       <Navbar user={user} initial={initial} onLogout={handleLogout}></Navbar>
       <Routes>
         <Route path="/" element={<Home />} />

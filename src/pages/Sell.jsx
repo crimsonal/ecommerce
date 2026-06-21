@@ -1,15 +1,19 @@
 import SaleItem from "../components/SaleItem"
-
+import Modal from "../components/Modal.jsx"
+import { useState } from "react"
 const Sell = () => {
-    
+    const [creatingProduct, setCreatingProduct] = useState(false)
     
     const products = [
         {product_name: "Pencil", product_description: "write", product_image: null}
     ]
+
+
     return (
-        <div className="flex flex-col w-full h-full overfow-hidden flex-1">
+        <div className="flex flex-col w-full h-full overfow-hidden flex-1 scrollbar-none overflow-hidden">
             <nav className="bg-slate-400 h-10 p-1">
-                <button className="rounded-full w-36 font-bold h-full bg-slate-500">
+                <button className="rounded-full w-36 font-bold h-full bg-slate-500"
+                onClick={() => {setCreatingProduct(true)}}>
                     Create product
                 </button>
             </nav>
@@ -22,8 +26,8 @@ const Sell = () => {
                         ))}
                     </div>
                 </div>
-                
             </div>
+            {creatingProduct && <Modal title="Create product"/>}
         </div>
     )
 
