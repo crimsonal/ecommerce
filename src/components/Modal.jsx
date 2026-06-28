@@ -1,10 +1,16 @@
-const Modal = ({title}) => {
+const Modal = ({title, onClose, children}) => {
 
 
     return (
-        <div className="flex justify-center items-center absolute  w-full h-full z-50 bg-slate-900/60 p-3 backdrop-blur-sm scrollbar-none overflow-hidden overflow-y-auto">
-            <div class="shadow-2xl rounded-sm p-6 h-60 max-w-lg w-full bg-white">
-                <h3 class="w-full justify-center items-center text-lg font-bold text-slate-900">{title}</h3>
+        <div className="flex justify-center fixed items-center w-full h-full z-50 bg-slate-900/60 p-3 backdrop-blur-sm scrollbar-none overflow-hidden overflow-y-auto">
+            <div className="flex flex-col shadow-2xl rounded-sm p-6 h-1/2 max-w-lg w-full bg-white">
+                <div className="flex">
+                    <h3 className="w-full justify-center items-center text-lg font-bold text-slate-900">{title}</h3>
+                    <button onClick={onClose}>close</button>
+                </div>
+                <div className="flex flex-col flex-1 p-5">
+                    {children}
+                </div>
             </div>
         </div>
     )

@@ -18,7 +18,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [initial, setInitial] = useState("👤")
   const navigate = useNavigate()
-  useEffect(() => {console.log(user)}, [user])
+  // useEffect(() => {console.log(user)}, [user]) // verify
   useEffect( () => {
     (async () => {
       try {
@@ -31,7 +31,7 @@ function App() {
       setUser(me.data)
       setInitial( me.data.username ? me.data.username.substring(0, 1).toUpperCase() : "👤")
       } catch (e) {
-        console.log(e)
+        console.error(e)
         clearToken()
         setUser(null)
       }

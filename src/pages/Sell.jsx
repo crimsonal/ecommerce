@@ -1,18 +1,57 @@
 import SaleItem from "../components/SaleItem"
 import Modal from "../components/Modal.jsx"
+import api from "../api/client.js"
 import { useState } from "react"
 const Sell = () => {
     const [creatingProduct, setCreatingProduct] = useState(false)
+    const [creatingName, setCreatingName] = useState("")
+    const [creatingDescription, setCreatingDescription] = useState("")
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [uploadStatus, setUploadStatus] = useState("idle")
+    const [previewUrl, setPreviewUrl] = useState('')
+
     
     const products = [
-        {product_name: "Pencil", product_description: "write", product_image: null}
+        {id: 0, product_name: "Pencil", product_description: "write", product_image: null}
     ]
 
+    const handleModalClose = () => {
+        // defaults
+        setCreatingProduct(false)
+        setCreatingName("")
+        setCreatingDescription("")
+        setSelectedFile(null)
+    } 
+
+    const handleCreateProductButton = async () => {
+        // add check to see if creatingProduct is not true
+        console.log(selectedFile.name)
+        const res = await api.post('/products/upload-url', {
+            file_name: selectedFile.name
+        })
+        console.log(res)
+        const {url} = res.data
+        console.log(url)
+        await api.put(url, {
+            body: selectedFile,
+            headers: {'Content-Type': selectedFile.type}
+        })
+
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+
+        if (file) {
+            console.log(file)
+            setSelectedFile(file)
+        }
+    }   
 
     return (
         <div className="flex flex-col w-full h-full overfow-hidden flex-1 scrollbar-none overflow-hidden">
-            <nav className="bg-slate-400 h-10 p-1">
-                <button className="rounded-full w-36 font-bold h-full bg-slate-500"
+            <nav className="bg-slate-200 h-10 p-1">
+                <button className="w-36 font-light h-full"
                 onClick={() => {setCreatingProduct(true)}}>
                     Create product
                 </button>
@@ -22,12 +61,52 @@ const Sell = () => {
                     <label className="block text-sm font-medium text-bg-500">Items on sale</label>
                     <div className="flex rounded-lg shadow-lg w-full h-[50vh] bg-slate-100 p-5">
                         {products.map((product) => (
-                            <SaleItem icon={product.product_image} name={product.product_name} desc={product.product_description}/>
+                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description}/>
                         ))}
                     </div>
                 </div>
             </div>
-            {creatingProduct && <Modal title="Create product"/>}
+            {creatingProduct && 
+            <Modal title="Create product" onClose={handleModalClose}> 
+                <div>
+                    <div>
+                        <label>Product name</label>
+                        <input
+                        type="text"
+                        value={creatingName}
+                        onInput={(e)=> setCreatingName(e.target.value)}
+                        placeholder="Product name"
+                        className="w-full p-3 text-sm">
+                        </input>
+                    </div>
+                    <div>
+                        <label>Product description</label>
+                        <input
+                        type="text"
+                        value={creatingDescription}
+                        onInput={(e) => setCreatingDescription(e.target.value)}
+                        placeholder="Product description"
+                        className="w-full p-3 text-sm"></input>
+                    </div>
+                    <div>
+                        <label>Product image</label>
+                        <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}>
+                        </input>
+                    </div>
+                </div>
+                <button 
+                className="mt-auto rounded bg-blue-500 p-2 font-light"
+                onClick={handleCreateProductButton}
+
+                >
+                    Create product
+                </button>
+                
+                
+            </Modal>}
         </div>
     )
 

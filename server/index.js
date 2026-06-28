@@ -9,6 +9,11 @@ import {pool} from "./scripts/connection.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors({
+  origin: '*',
+  credentials: true
+}))
+
 const shutdown = async () => {
   try {
     await pool.end()
