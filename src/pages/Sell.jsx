@@ -1,15 +1,17 @@
 import SaleItem from "../components/SaleItem"
 import Modal from "../components/Modal.jsx"
 import api from "../api/client.js"
+import axios from "axios";
+import { getToken } from "../api/auth.js";
 import { useState } from "react"
-const Sell = () => {
+const Sell = ({userId}) => {
     const [creatingProduct, setCreatingProduct] = useState(false)
     const [creatingName, setCreatingName] = useState("")
     const [creatingDescription, setCreatingDescription] = useState("")
     const [selectedFile, setSelectedFile] = useState(null)
     const [uploadStatus, setUploadStatus] = useState("idle")
     const [previewUrl, setPreviewUrl] = useState('')
-
+    
     
     const products = [
         {id: 0, product_name: "Pencil", product_description: "write", product_image: null}
@@ -25,17 +27,24 @@ const Sell = () => {
 
     const handleCreateProductButton = async () => {
         // add check to see if creatingProduct is not true
-        console.log(selectedFile.name)
-        const res = await api.post('/products/upload-url', {
+        const getUploadUrl = await api.post('/products/upload-url', {
             file_name: selectedFile.name
         })
-        console.log(res)
-        const {url} = res.data
-        console.log(url)
-        await api.put(url, {
-            body: selectedFile,
+        const {url} = getUploadUrl.data
+        await axios.put(url, selectedFile, {
             headers: {'Content-Type': selectedFile.type}
         })
+
+        const Key = `user-uploads/${userId}/${selectedFile.name}`
+        
+        //product_name, product_description, product_image
+
+        await api.post("/products", {
+            product_name: creatingName, 
+            product_description: creatingDescription,
+            product_image: Key
+        })
+        
 
     }
 
@@ -43,7 +52,6 @@ const Sell = () => {
         const file = e.target.files[0]
 
         if (file) {
-            console.log(file)
             setSelectedFile(file)
         }
     }   
@@ -58,8 +66,19 @@ const Sell = () => {
             </nav>
             <div className="flex justify-center items-center h-full">
                 <div className="p-5 w-full h-full">
-                    <label className="block text-sm font-medium text-bg-500">Items on sale</label>
+                    <label className="block text-sm font-medium text-bg-500">Your products</label>
                     <div className="flex rounded-lg shadow-lg w-full h-[50vh] bg-slate-100 p-5">
+                        {products.map((product) => (
+                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description}/>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex justify-center items-center h-full">
+                <div className="p-5 w-full h-full">
+                    <label className="block text-sm font-medium text-bg-500">Items on sale</label>
+                    <div className="flex rounded-lg shadow-lg w-full h-[25vh] bg-slate-100 p-5">
                         {products.map((product) => (
                             <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description}/>
                         ))}

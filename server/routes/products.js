@@ -1,7 +1,7 @@
 import e from "express"
 import { pool } from "../scripts/connection.js"
 import {doesUserExist} from "../db/user_module.js"
-import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3"
+import {S3Client, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3"
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { addProduct, removeProduct, userOwnsProduct, getProduct } from "../db/product_module.js"
 import dotenv from 'dotenv';
@@ -23,38 +23,36 @@ const s3 = new S3Client({
 
 router.post("/", async (req, res) => {
     try {
-        const {product_name, product_descåription, product_image} = req.body 
+        const {product_name, product_description, product_image} = req.body 
         if (!product_name || !product_description || !product_image) {
             return res.status(400).send({success: false, message: "product_name, product_description, and product_image required"})
         }
 
-        // locate user in database
 
-        if (doesUserExist(req.user.userId)) {
-            const query = await addProduct(req.user.userId, {product_name, product_description, product_image})
-            if (!query.success) {
-                return res.status(404).send({...query, message: "Failed to add product"})
-            }
+        const query = await addProduct(req.user.userId, {product_name, product_description, product_image})
+        if (!query.success) {
+            return res.status(404).send({...query, message: "Failed to add product"})
         }
 
 
         res.send({success: true, message: "Product added successfully"})
     } catch (err) {
+        console.log(err.message)
         res.status(500).send({success:false, message: "Error adding product", error: err.message})
     }
 })
 
-router.get("/:id", async(req, res) => {
-
+router.get("/get", async(req, res) => {
+    
     try {
-        const id = req.params.id 
+        const {id} = req.query
 
         if (!id) {
             return res.status(400).send({success: false, message: "id is required"})
         }
 
         const query = await getProduct(id)
-
+        console.log(query)
         if (!query.success) {
             return res.status(404).send({...query, message: "Product not found"})
         }
@@ -119,6 +117,30 @@ router.post("/upload-url", async(req, res) => {
         res.status(500).send({success: false, message: "Failed: /prepareImageUpload", err: err.message})
     }
     
+})
+
+router.get("/url", async (req, res) => {
+    const {key} = req.query 
+
+    if (!key) {
+        return res.status(400).send({success: false, message: "key is required"})
+    }
+
+    try {
+        const command = new GetObjectCommand({
+            Bucket: process.env.BUCKET_NAME,
+            Key: key
+        })
+
+        const Url = await getSignedUrl(s3, command, {
+            expiresIn: 60 * 5 
+        })
+
+        res.status(200).send({url: Url})
+    } catch (err) {
+        res.status(500).send({success: false, message: "Failed: /url", err: err.message})
+    }
+
 })
 
 export default router

@@ -16,6 +16,7 @@ import Sell from './pages/Sell.jsx'
 function App() {
 
   const [user, setUser] = useState(null)
+  const [userId, setUserId] = useState(null)
   const [initial, setInitial] = useState("👤")
   const navigate = useNavigate()
   // useEffect(() => {console.log(user)}, [user]) // verify
@@ -29,6 +30,7 @@ function App() {
       }
       const me = await api.get("/user/me/")
       setUser(me.data)
+      setUserId(me.data.id)
       setInitial( me.data.username ? me.data.username.substring(0, 1).toUpperCase() : "👤")
       } catch (e) {
         console.error(e)
@@ -59,7 +61,7 @@ function App() {
         <Route path="/login" element={<Login onLoggedIn={setUser} setInitial={setInitial}/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/sell" element={<Sell />} />
+        <Route path="/sell" element={<Sell userId={userId}/>} />
       </Routes>
     </div>
   )

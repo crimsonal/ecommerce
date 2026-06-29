@@ -45,8 +45,13 @@ export async function removeProduct(productId) {
 
 export async function getProduct(productId) {
     try {
+
+        console.log(productId)
         const [rows] = await pool.query("SELECT * FROM products WHERE products.id = ?", [productId])
 
+        if (rows.length === 0) {
+            return {success: false}
+        }
         return {...rows[0], success: true}
     } catch (err) {
         return {success: false, message: err.message}
