@@ -46,7 +46,6 @@ export async function removeProduct(productId) {
 export async function getProduct(productId) {
     try {
 
-        console.log(productId)
         const [rows] = await pool.query("SELECT * FROM products WHERE products.id = ?", [productId])
 
         if (rows.length === 0) {
@@ -58,4 +57,29 @@ export async function getProduct(productId) {
     }
 
     return {success: false, message: "Failed to find product"}
+}
+
+export async function getProducts(userId) {
+    try {
+        
+        const [rows] = await pool.query(`
+        SELECT
+            p.*,
+            EXISTS (
+                SELECT 1
+                FROM shop s
+                WHERE s.product_id = p.id
+            ) AS onSale
+        FROM products p
+        WHERE p.user_id = ?;`, [userId])
+
+        if (rows.length === 0) {
+            return {success: false}
+        }
+        return rows
+    } catch (err) {
+        return {success: false, message: err.message}
+    }
+
+    return {success: false, message: `Failed to find products for user id ${userId}`}
 }

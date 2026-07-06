@@ -3,7 +3,7 @@ import Modal from "../components/Modal.jsx"
 import api from "../api/client.js"
 import axios from "axios";
 import { getToken } from "../api/auth.js";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 const Sell = ({userId}) => {
     const [creatingProduct, setCreatingProduct] = useState(false)
     const [creatingName, setCreatingName] = useState("")
@@ -11,11 +11,23 @@ const Sell = ({userId}) => {
     const [selectedFile, setSelectedFile] = useState(null)
     const [uploadStatus, setUploadStatus] = useState("idle")
     const [previewUrl, setPreviewUrl] = useState('')
+    const [products, setProducts] = useState([])
     
-    
-    const products = [
-        {id: 0, product_name: "Pencil", product_description: "write", product_image: null}
-    ]
+    useEffect(() => {
+        const initProducts = async () => {
+            try {
+                const res = await api.get("/user/products")
+                console.log(res.data.products)
+                setProducts(res.data.products)
+            } catch (err) {
+                console.error("Failed to load products: ", err)
+            }
+            
+            
+        }
+        initProducts()
+        
+    }, [])
 
     const handleModalClose = () => {
         // defaults
@@ -37,7 +49,6 @@ const Sell = ({userId}) => {
 
         const Key = `user-uploads/${userId}/${selectedFile.name}`
         
-        //product_name, product_description, product_image
 
         await api.post("/products", {
             product_name: creatingName, 
@@ -56,6 +67,9 @@ const Sell = ({userId}) => {
         }
     }   
 
+    
+
+    
     return (
         <div className="flex flex-col w-full h-full overfow-hidden flex-1 scrollbar-none overflow-hidden">
             <nav className="bg-slate-200 h-10 p-1">
@@ -67,24 +81,14 @@ const Sell = ({userId}) => {
             <div className="flex justify-center items-center h-full">
                 <div className="p-5 w-full h-full">
                     <label className="block text-sm font-medium text-bg-500">Your products</label>
-                    <div className="flex rounded-lg shadow-lg w-full h-[50vh] bg-slate-100 p-5">
+                    <div className="flex flex-wrap justify-center gap-6 rounded-lg w-full h-[50vh] p-5">
                         {products.map((product) => (
-                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description}/>
+                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description} onSale={product.onSale}/>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-center items-center h-full">
-                <div className="p-5 w-full h-full">
-                    <label className="block text-sm font-medium text-bg-500">Items on sale</label>
-                    <div className="flex rounded-lg shadow-lg w-full h-[25vh] bg-slate-100 p-5">
-                        {products.map((product) => (
-                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description}/>
-                        ))}
-                    </div>
-                </div>
-            </div>
             {creatingProduct && 
             <Modal title="Create product" onClose={handleModalClose}> 
                 <div>
