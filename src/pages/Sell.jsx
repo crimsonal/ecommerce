@@ -1,35 +1,49 @@
 import SaleItem from "../components/SaleItem"
 import Modal from "../components/Modal.jsx"
+import ModalTextInput from "../components/ModalTextInput.jsx";
+import ModalFileInput from "../components/ModalFileInput.jsx";
+import ModalCheckboxInput from "../components/ModalCheckboxInput.jsx";
 import api from "../api/client.js"
 import axios from "axios";
 import { getToken } from "../api/auth.js";
 import { useState, useEffect } from "react"
 const Sell = ({userId}) => {
     const [creatingProduct, setCreatingProduct] = useState(false)
-    const [creatingName, setCreatingName] = useState("")
     const [creatingDescription, setCreatingDescription] = useState("")
+    const [creatingName, setCreatingName] = useState("")
     const [selectedFile, setSelectedFile] = useState(null)
-    const [uploadStatus, setUploadStatus] = useState("idle")
+
+    const [editingProduct, setEditingProduct] = useState(false)
+    const [productEditingId, setProductEditingId] = useState(0)
+    const [editingName, setEditingName] = useState("")
+    const [editingDescription, setEditingDescription] = useState("")
+    const [editingOnSale, setEditingOnSale] = useState(false)
+    const [editingPrice, setEditingPrice] = useState(0)
+    
+    
+    const [uploadStatus, setUploadStatus] = useState(false)
     const [previewUrl, setPreviewUrl] = useState('')
+
     const [products, setProducts] = useState([])
+    const [productsMap, setProductsMap] = useState(new Map(null))
     
     useEffect(() => {
         const initProducts = async () => {
             try {
                 const res = await api.get("/user/products")
-                console.log(res.data.products)
-                setProducts(res.data.products)
+                const productsArray = res.data.products
+                console.log(productsArray)
+                setProducts(productsArray)
+                setProductsMap(new Map(productsArray.map(product => [product.id, product])))
             } catch (err) {
                 console.error("Failed to load products: ", err)
-            }
-            
-            
+            } 
         }
         initProducts()
         
     }, [])
 
-    const handleModalClose = () => {
+    const handleCreateProductModalClose = () => {
         // defaults
         setCreatingProduct(false)
         setCreatingName("")
@@ -37,25 +51,35 @@ const Sell = ({userId}) => {
         setSelectedFile(null)
     } 
 
+    const handleEditProductModalClose = () => {
+        setEditingProduct(false)
+        setProductEditingId(0)
+    }
+
     const handleCreateProductButton = async () => {
         // add check to see if creatingProduct is not true
-        const getUploadUrl = await api.post('/products/upload-url', {
-            file_name: selectedFile.name
-        })
-        const {url} = getUploadUrl.data
-        await axios.put(url, selectedFile, {
-            headers: {'Content-Type': selectedFile.type}
-        })
+        if (!uploadStatus) {
+            setUploadStatus(true)
+            const getUploadUrl = await api.post('/products/upload-url', {
+                file_name: selectedFile.name
+            })
+            const {url} = getUploadUrl.data
+            await axios.put(url, selectedFile, {
+                headers: {'Content-Type': selectedFile.type}
+            })
 
-        const Key = `user-uploads/${userId}/${selectedFile.name}`
+            const Key = `user-uploads/${userId}/${selectedFile.name}`
         
+            await api.post("/products", {
+                product_name: creatingName, 
+                product_description: creatingDescription,
+                product_image: Key
+            })
+            setUploadStatus(false)
+        }
+    }
 
-        await api.post("/products", {
-            product_name: creatingName, 
-            product_description: creatingDescription,
-            product_image: Key
-        })
-        
+    const handleEditProductButton = () => {
 
     }
 
@@ -67,9 +91,33 @@ const Sell = ({userId}) => {
         }
     }   
 
-    
+    const handleProductSaleToggle = (value) => {
+        setEditingOnSale(value)
+    }
 
-    
+    const handleEdit = (id)  => {
+        if (!editingProduct && !creatingProduct) {
+            if (productsMap.has(id)) {
+                const product = productsMap.get(id)
+                setEditingProduct(true)
+                setProductEditingId(id)
+                setEditingName(product.product_name)
+                setEditingDescription(product.product_description)
+                setEditingOnSale(product.onSale)
+                setEditingPrice(product.price !== null ? product.price : 0)
+
+                
+            }
+        }
+    }
+
+    const handleBlur = () => {
+        const num = parseFloat(editingPrice)
+        if (!isNaN(num)) {
+            setEditingPrice(num.toFixed(2))
+        }
+    }
+
     return (
         <div className="flex flex-col w-full h-full overfow-hidden flex-1 scrollbar-none overflow-hidden">
             <nav className="bg-slate-200 h-10 p-1">
@@ -83,42 +131,18 @@ const Sell = ({userId}) => {
                     <label className="block text-sm font-medium text-bg-500">Your products</label>
                     <div className="flex flex-wrap justify-center gap-6 rounded-lg w-full h-[50vh] p-5">
                         {products.map((product) => (
-                            <SaleItem key={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description} onSale={product.onSale}/>
+                            <SaleItem key={product.id} id={product.id} icon={product.product_image} name={product.product_name} desc={product.product_description} onSale={product.onSale} handleEdit={handleEdit}/>
                         ))}
                     </div>
                 </div>
             </div>
 
             {creatingProduct && 
-            <Modal title="Create product" onClose={handleModalClose}> 
+            <Modal title="Create product" onClose={handleCreateProductModalClose}> 
                 <div>
-                    <div>
-                        <label>Product name</label>
-                        <input
-                        type="text"
-                        value={creatingName}
-                        onInput={(e)=> setCreatingName(e.target.value)}
-                        placeholder="Product name"
-                        className="w-full p-3 text-sm">
-                        </input>
-                    </div>
-                    <div>
-                        <label>Product description</label>
-                        <input
-                        type="text"
-                        value={creatingDescription}
-                        onInput={(e) => setCreatingDescription(e.target.value)}
-                        placeholder="Product description"
-                        className="w-full p-3 text-sm"></input>
-                    </div>
-                    <div>
-                        <label>Product image</label>
-                        <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}>
-                        </input>
-                    </div>
+                    <ModalTextInput label="Product name" val={creatingName} input={setCreatingName}/>
+                    <ModalTextInput label="Product description" val={creatingDescription} input={setCreatingDescription}/>
+                    <ModalFileInput label="Product image" input={handleFileChange}/>
                 </div>
                 <button 
                 className="mt-auto rounded bg-blue-500 p-2 font-light"
@@ -129,6 +153,44 @@ const Sell = ({userId}) => {
                 </button>
                 
                 
+            </Modal>}
+
+            {editingProduct && 
+            <Modal title="Edit product" onClose={handleEditProductModalClose}>
+                <div>
+                    <ModalTextInput label="Product name" val={editingName} input={setEditingName}/>
+                    <ModalTextInput label="Product description" val={editingDescription} input={setEditingDescription}/>
+                    <div>
+                        <ModalCheckboxInput label="On sale" val={editingOnSale} input={handleProductSaleToggle} />
+                        <div className="flex flex-col">
+                            <label>Product price</label>
+                            <div className="flex items-center">
+                                <span className="font-medium">$</span>
+                                <input
+                                type="number"
+                                min="0.00"
+                                step="0.01"
+                                inputMode="decimal"
+                                placeholder="0.00"
+                                className="w-full p-3"
+                                value={editingPrice}
+                                onInput={(e) => setEditingPrice(e.target.value)}
+                                onBlur={handleBlur}
+                                required
+                                >
+                                </input>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <button 
+                className="mt-auto rounded bg-blue-500 p-2 font-light"
+                onClick={handleEditProductButton}
+
+                >
+                    Update product
+                </button>
             </Modal>}
         </div>
     )

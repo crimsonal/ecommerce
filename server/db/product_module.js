@@ -65,12 +65,14 @@ export async function getProducts(userId) {
         const [rows] = await pool.query(`
         SELECT
             p.*,
+            s.price,
             EXISTS (
                 SELECT 1
-                FROM shop s
-                WHERE s.product_id = p.id
+                FROM shop AS shop_check
+                WHERE shop_check.product_id = p.id
             ) AS onSale
         FROM products p
+        LEFT JOIN shop AS s ON p.id = s.product_id
         WHERE p.user_id = ?;`, [userId])
 
         if (rows.length === 0) {

@@ -4,7 +4,7 @@ import api from "../api/client"
 import { checkImageExists } from "../api/helper"
 import { Pencil } from "lucide-react"
 
-const SaleItem = ({name, desc, icon, onSale, handleEdit}) => {
+const SaleItem = ({id, name, desc, icon, onSale, handleEdit}) => {
     const [source, setSource] = useState("")
 
     useEffect(() => {
@@ -13,12 +13,10 @@ const SaleItem = ({name, desc, icon, onSale, handleEdit}) => {
                 const res = await api.get(`/products/url?key=${icon}`)
                 const imageUrl = res.data.url 
                 
-                if (!checkImageExists(imageUrl)) { // checking for bad url
+                if (!checkImageExists(imageUrl)) {
                     setSource("")
-                    console.log(imageUrl)
                 } else {
                     setSource(imageUrl)
-                    console.log(imageUrl)
                 }
             } catch (err) {
                 console.error("Failed to retreive presigned image: ", err)
@@ -26,6 +24,8 @@ const SaleItem = ({name, desc, icon, onSale, handleEdit}) => {
         }
         getIcon()
     }, [])
+
+
     return (
         <div className="flex flex-col w-72 bg-slate-50 outline-solid outline-1 cursor-pointer overflow-hidden hover:shadow-lg shadow-md rounded-xl transition duration-200 ease-in-out">
             <div className="relative">
@@ -40,7 +40,7 @@ const SaleItem = ({name, desc, icon, onSale, handleEdit}) => {
                     On Sale
                 </span>)}
                 <button
-                onClick={handleEdit}
+                onClick={() => handleEdit(id)}
                 className="absolute right-3 top-3 rounded-full bg-white p-2 text-gray-700 shadow hover:bg-gray-100"
                 aria-label="Edit item"
                 >
@@ -49,8 +49,6 @@ const SaleItem = ({name, desc, icon, onSale, handleEdit}) => {
                 </button>
             </div>
            
-            
-            
             <div className="flex flex-col p-2"> 
                 <span className="font-medium">
                     {name}

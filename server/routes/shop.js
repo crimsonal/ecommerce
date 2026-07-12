@@ -1,6 +1,6 @@
 import e from "express";
 import { userOwnsProduct } from "../db/product_module.js";
-import {addProductToShop, getShop} from "../db/shop_module.js"
+import {addProductToShop, getShop, removeProductFromShop} from "../db/shop_module.js"
 const router = e.Router()
 
 router.post("/", async(req, res) => {
@@ -31,6 +31,34 @@ router.post("/", async(req, res) => {
     } catch (err) {
         res.status(500).send({success: false, message: "Error adding product to shop", error: err.message})
     }
+})
+
+router.delete("/", async(req, res) => {
+
+    try {
+
+        const {product_id} = req.body
+
+        if (!product_id) {
+            return res.status(400).send({success: false, message: "product_id is required"})
+        }
+
+        const ownership = await userOwnsProduct(req.user.userId, Number(product_id))
+
+        if (!ownership.success) {
+            return res.status(400).send({...ownership, message: "User does not own product"})
+        }
+
+        const query = await removeProductFromShop(req.user.userId, Number(product_id))
+        if (!query.success) {
+            return res.status(400).send({...query, message: "Failed to remove product from shop"})
+        }
+
+        res.status(200).send({...query, message: "Deleted product from shop"})
+
+     } catch (err) {
+        res.status(500).send({success: false, message: "Error removing product from shop", error: err.message})
+     }
 })
 
 router.get("/", async(req, res) => {

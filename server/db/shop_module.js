@@ -16,6 +16,21 @@ export async function addProductToShop(product_id, user_id, price) {
     return {success: false}
 }
 
+export async function removeProductFromShop(userId, productId) {
+
+    try {
+        const query = await pool.query("DELETE FROM shop WHERE product_id = ?", [productId])
+
+        if (query.rowCount !== 0) {
+            return {success: true}
+        }
+    } catch (err) {
+        return {success: false, error: err}
+    }
+
+    return {success: false}
+}
+
 export async function getShop() {
 
     try {
