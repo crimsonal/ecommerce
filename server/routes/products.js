@@ -42,17 +42,16 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.get("/get", async(req, res) => {
-    
+router.get("/:id", async(req, res) => {
     try {
-        const {id} = req.query
+        const {id} = req.params
 
         if (!id) {
             return res.status(400).send({success: false, message: "id is required"})
         }
 
         const query = await getProduct(id)
-        console.log(query)
+
         if (!query.success) {
             return res.status(404).send({...query, message: "Product not found"})
         }
@@ -120,6 +119,7 @@ router.post("/upload-url", async(req, res) => {
 })
 
 router.get("/url", async (req, res) => {
+    console.log("I was called!")
     const {key} = req.query 
 
     if (!key) {

@@ -31,16 +31,18 @@ const Shop = ({user}) => {
             if (!user)
                 return;
             const shop_data = await api.get("/shop")
+            let productsList = []
             setShops(shop_data.data.shop)
             for (const shop of shop_data.data.shop) {
                 const product = await api.get(`/products/${shop.product_id}`)
-                const newProducts = [...products, product.data]
-                setProducts(newProducts)
+                productsList = [...productsList, product.data]
+                
             }
+            setProducts(productsList)
             setLoading(false)
         }
         loadShop()
-    }, [])
+    }, [user])
 
     const getProduct = (id) => {
         for (const product of products) {
@@ -82,13 +84,13 @@ const Shop = ({user}) => {
             <div className="flex justify-center items-center search-block w-full h-40 -mt-10"> 
                 <input type="text" placeholder="Search for an item.." onChange={handleSearchText} className=" text-sm search-bar w-2/3 h-15 rounded-md shadow p-2" />
             </div>
-
-            <div className="flex items-block w-full flex-grow p-10 border-solid border-gray-400">
+            {!loading && <div className="flex items-block w-full flex-grow p-10 border-solid border-gray-400">
                 {shops.map((product) => (
                     
                     <ItemCard key= {product.shop_id } name={getProductName(product.product_id)} price={product.price} description={getProductDescription(product.product_id)}/>
                 ))}
-            </div>
+            </div>}
+            
         </div>
 
     )

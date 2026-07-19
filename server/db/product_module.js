@@ -28,6 +28,22 @@ export async function userOwnsProduct(userId, productId) {
     return {success: false, message: "User does not own product"}
 }
 
+export async function updateProduct(productId, productName, productDescription) {
+
+    try {
+        await pool.query(
+        `
+            UPDATE products 
+            SET product_name = ?, product_description = ?
+            WHERE id = ?
+        `, [productName, productDescription, productId])
+    } catch(err) {
+        return {success: false, error: err}
+    }
+
+    return {success: true}
+}
+
 export async function removeProduct(productId) {
 
     try {

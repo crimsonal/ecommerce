@@ -31,6 +31,30 @@ export async function removeProductFromShop(userId, productId) {
     return {success: false}
 }
 
+export async function productExists(productId) {
+    try {
+        const query = await pool.query("SELECT * FROM shop WHERE product_id = ?", [productId])
+        if (query[0].length !== 0) {
+            return {success: true}
+        }
+    } catch (err) {
+        return {success: false, error: err}
+    }
+
+    return {success: false}
+}
+
+export async function updatePrice(productId, price) {
+    try {
+        await pool.query("UPDATE shop SET price = ? WHERE product_id = ?", [price, productId])
+    } catch (err) {
+        return {success: false, error: err}
+    }
+    
+    return {success: true}
+}
+
+
 export async function getShop() {
 
     try {

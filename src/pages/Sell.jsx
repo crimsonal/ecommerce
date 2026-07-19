@@ -19,6 +19,7 @@ const Sell = ({userId}) => {
     const [editingDescription, setEditingDescription] = useState("")
     const [editingOnSale, setEditingOnSale] = useState(false)
     const [editingPrice, setEditingPrice] = useState(0)
+    const [editingPending, setEditingPending] = useState(false)
     
     
     const [uploadStatus, setUploadStatus] = useState(false)
@@ -27,12 +28,12 @@ const Sell = ({userId}) => {
     const [products, setProducts] = useState([])
     const [productsMap, setProductsMap] = useState(new Map(null))
     
+    
     useEffect(() => {
         const initProducts = async () => {
             try {
                 const res = await api.get("/user/products")
                 const productsArray = res.data.products
-                console.log(productsArray)
                 setProducts(productsArray)
                 setProductsMap(new Map(productsArray.map(product => [product.id, product])))
             } catch (err) {
@@ -79,7 +80,22 @@ const Sell = ({userId}) => {
         }
     }
 
-    const handleEditProductButton = () => {
+    const handleEditProductButton = async () => {
+        if (editingProduct && !editingPending) {
+            if (editingOnSale && editingPrice === 0) {
+                console.log("price must be higher")
+                return
+            }
+            setEditingPending(true)
+            const res = await api.post("/shop/update", {
+                onSale: editingOnSale,
+                productId: productEditingId,
+                productName: editingName,
+                productDescription: editingDescription,
+                productPrice: editingPrice
+            })
+            setEditingPending(false)
+        }
 
     }
 

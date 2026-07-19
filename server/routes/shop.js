@@ -1,6 +1,6 @@
 import e from "express";
-import { userOwnsProduct } from "../db/product_module.js";
-import {addProductToShop, getShop, removeProductFromShop} from "../db/shop_module.js"
+import { userOwnsProduct, updateProduct } from "../db/product_module.js";
+import {addProductToShop, getShop, productExists, removeProductFromShop, updatePrice} from "../db/shop_module.js"
 const router = e.Router()
 
 router.post("/", async(req, res) => {
@@ -26,10 +26,63 @@ router.post("/", async(req, res) => {
             return res.status(400).send({...query, message: "Failed to add product to shop"})
         }
 
+
         res.send({...query, message: "Added product to shop"})
 
     } catch (err) {
         res.status(500).send({success: false, message: "Error adding product to shop", error: err.message})
+    }
+})
+
+router.post("/update", async(req, res) => {
+
+    try {
+
+        const {onSale, productId, productName, productDescription, productPrice} = req.body
+
+        if (!productId || !onSale || !productName || !productDescription || !productPrice) {
+            return res.status(400).send({success: false, message: "productId, onSale, productName, productDescription, and productPrice is required"})
+        }
+
+        const normalizedProductId = Number(productId)
+        const normalizedPrice = Number(productPrice)
+        const normalizedOnSale = Number(onSale)
+        const userId = req.user.userId
+        const ownership = await userOwnsProduct(userId, normalizedProductId)
+
+        if (!ownership.success) {
+            return res.status(400).send({...ownership, message: "User does not own product"})
+        }
+        
+        updateProduct(normalizedProductId, productName, productDescription) 
+        
+        const exists = await productExists(normalizedProductId) 
+
+        if (!exists.success) {
+            if (normalizedOnSale === 0) {
+                return res.status(200).send({message: "Successfully updated product attributes"})
+            } else {
+                const query = await addProductToShop(normalizedProductId, userId, normalizedPrice)
+                if (!query.success) {
+                    return res.status(400).send({...query, message: "Failed to add product to shop"})
+                }
+
+                return res.status(200).send({...query, message: "Added product to shop"})
+            }
+        } else {
+            if (normalizedOnSale === 0) {
+                await removeProductFromShop(userId, normalizedProductId)
+                return res.status(200).send({message: "Successfully updated shop product and took product off shop"})
+            } else {
+                updatePrice(normalizedProductId, normalizedPrice)
+                return res.status(200).send({message: "Successfully updated shop product"})
+            }
+        }
+        
+        res.status(200).send({message: "Something went wrong"})
+
+    } catch (err) {
+        res.status(500).send({success: false, message: "Error updating product", error: err.message})
     }
 })
 
