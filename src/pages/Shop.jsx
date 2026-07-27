@@ -3,6 +3,7 @@ import api from "../api/client.js"
 import ItemCard from "../components/ItemCard"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
+import Searchbar from "../components/Searchbar.jsx"
 const Shop = ({user}) => {
     const [searchText, setSearchText] = useState("")
     const [shops, setShops] = useState([])
@@ -34,7 +35,7 @@ const Shop = ({user}) => {
             let productsList = []
             setShops(shop_data.data.shop)
             for (const shop of shop_data.data.shop) {
-                const product = await api.get(`/products/${shop.product_id}`)
+                const product = await api.get(`/products/get/${shop.product_id}`)
                 productsList = [...productsList, product.data]
                 
             }
@@ -58,7 +59,7 @@ const Shop = ({user}) => {
         if (product !== null) {
             return product.product_name
         }
-        return "n/a"
+        return "[No name]"
     }
 
     const getProductDescription = (id) => {
@@ -66,8 +67,17 @@ const Shop = ({user}) => {
         if (product !== null) {
             return product.product_description
         }
-        return "n/a"
+        return "[No description]"
     }
+
+    const getProductImage = (id) => {
+        const product = getProduct(id)
+        if (product !== null) {
+            return product.product_image
+        }
+        return null
+    }
+
 
 
     return (
@@ -81,13 +91,11 @@ const Shop = ({user}) => {
                 <h1 className="absolute left-1/2 -translate-x-1/2 text-2xl bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500 text-transparent justify-center font-[inter] mt-10 font-semibold">What are you shopping for today?</h1>
             </div>
             
-            <div className="flex justify-center items-center search-block w-full h-40 -mt-10"> 
-                <input type="text" placeholder="Search for an item.." onChange={handleSearchText} className=" text-sm search-bar w-2/3 h-15 rounded-md shadow p-2" />
-            </div>
-            {!loading && <div className="flex items-block w-full flex-grow p-10 border-solid border-gray-400">
+            <Searchbar handleSearchText={handleSearchText} />
+            {!loading && <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {shops.map((product) => (
                     
-                    <ItemCard key= {product.shop_id } name={getProductName(product.product_id)} price={product.price} description={getProductDescription(product.product_id)}/>
+                    <ItemCard key= {product.shop_id } name={getProductName(product.product_id)} price={product.price} description={getProductDescription(product.product_id)} icon={getProductImage(product.product_id)}/>
                 ))}
             </div>}
             

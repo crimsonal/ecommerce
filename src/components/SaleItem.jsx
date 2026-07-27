@@ -1,28 +1,14 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import api from "../api/client"
-import { checkImageExists } from "../api/helper"
+import { checkImageExists, getAndSetIcon } from "../api/helper"
 import { Pencil } from "lucide-react"
 
 const SaleItem = ({id, name, desc, icon, onSale, handleEdit}) => {
     const [source, setSource] = useState("")
 
     useEffect(() => {
-        const getIcon = async () => {
-            try {
-                const res = await api.get(`/products/url?key=${icon}`)
-                const imageUrl = res.data.url 
-                
-                if (!checkImageExists(imageUrl)) {
-                    setSource("")
-                } else {
-                    setSource(imageUrl)
-                }
-            } catch (err) {
-                console.error("Failed to retreive presigned image: ", err)
-            }
-        }
-        getIcon()
+        getAndSetIcon(icon, setSource)
     }, [])
 
 

@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.get("/:id", async(req, res) => {
+router.get("/get/:id", async(req, res) => {
     try {
         const {id} = req.params
 
@@ -119,7 +119,6 @@ router.post("/upload-url", async(req, res) => {
 })
 
 router.get("/url", async (req, res) => {
-    console.log("I was called!")
     const {key} = req.query 
 
     if (!key) {

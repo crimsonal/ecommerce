@@ -81,6 +81,7 @@ const Sell = ({userId}) => {
     }
 
     const handleEditProductButton = async () => {
+        // TODO: Ensure productPrice is within limits (i.e., >0)
         if (editingProduct && !editingPending) {
             if (editingOnSale && editingPrice === 0) {
                 console.log("price must be higher")
