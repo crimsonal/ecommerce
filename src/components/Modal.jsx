@@ -1,4 +1,4 @@
-const Modal = ({title, onClose, children}) => {
+const Modal = ({title, onClose, error, children}) => {
 
 
     return (
@@ -8,6 +8,7 @@ const Modal = ({title, onClose, children}) => {
                     <h3 className="w-full justify-center items-center text-lg font-bold text-slate-900">{title}</h3>
                     <button onClick={onClose}>close</button>
                 </div>
+                {error && <div className="text-red-500 mt-5">❌ Error: {error}</div>}
                 <div className="flex flex-col flex-1 p-5">
                     {children}
                 </div>

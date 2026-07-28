@@ -21,12 +21,14 @@ const Sell = ({userId}) => {
     const [editingPrice, setEditingPrice] = useState(0)
     const [editingPending, setEditingPending] = useState(false)
     
-    
     const [uploadStatus, setUploadStatus] = useState(false)
     const [previewUrl, setPreviewUrl] = useState('')
 
     const [products, setProducts] = useState([])
     const [productsMap, setProductsMap] = useState(new Map(null))
+
+    const [createProductError, setCreateProductError] = useState(false)
+    const [editProductError, setEditProductError] = useState(false)
     
     
     useEffect(() => {
@@ -55,6 +57,7 @@ const Sell = ({userId}) => {
     const handleEditProductModalClose = () => {
         setEditingProduct(false)
         setProductEditingId(0)
+        setEditProductError(false)
     }
 
     const handleCreateProductButton = async () => {
@@ -77,14 +80,16 @@ const Sell = ({userId}) => {
                 product_image: Key
             })
             setUploadStatus(false)
+
         }
     }
 
     const handleEditProductButton = async () => {
         // TODO: Ensure productPrice is within limits (i.e., >0)
         if (editingProduct && !editingPending) {
-            if (editingOnSale && editingPrice === 0) {
-                console.log("price must be higher")
+            console.log(editingOnSale, editingPrice)
+            if (editingOnSale === 1 && editingPrice === 0) {
+                setEditProductError("Price must be greater than $0.")
                 return
             }
             setEditingPending(true)
@@ -96,8 +101,8 @@ const Sell = ({userId}) => {
                 productPrice: editingPrice
             })
             setEditingPending(false)
+            setEditProductError(false)
         }
-
     }
 
     const handleFileChange = (e) => {
@@ -122,8 +127,6 @@ const Sell = ({userId}) => {
                 setEditingDescription(product.product_description)
                 setEditingOnSale(product.onSale)
                 setEditingPrice(product.price !== null ? product.price : 0)
-
-                
             }
         }
     }
@@ -155,7 +158,7 @@ const Sell = ({userId}) => {
             </div>
 
             {creatingProduct && 
-            <Modal title="Create product" onClose={handleCreateProductModalClose}> 
+            <Modal title="Create product" onClose={handleCreateProductModalClose} error={createProductError}> 
                 <div>
                     <ModalTextInput label="Product name" val={creatingName} input={setCreatingName}/>
                     <ModalTextInput label="Product description" val={creatingDescription} input={setCreatingDescription}/>
@@ -173,7 +176,7 @@ const Sell = ({userId}) => {
             </Modal>}
 
             {editingProduct && 
-            <Modal title="Edit product" onClose={handleEditProductModalClose}>
+            <Modal title="Edit product" onClose={handleEditProductModalClose} error={editProductError}>
                 <div>
                     <ModalTextInput label="Product name" val={editingName} input={setEditingName}/>
                     <ModalTextInput label="Product description" val={editingDescription} input={setEditingDescription}/>
