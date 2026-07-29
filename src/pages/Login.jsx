@@ -79,7 +79,6 @@ const Login = ({onLoggedIn, setInitial}) => {
                             </input>
                         </div>
 
-
                         <label className="block text-sm font-medium text-bg-500">Password</label>
                         <div>
                             <input type="password"

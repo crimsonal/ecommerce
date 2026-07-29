@@ -40,7 +40,7 @@ router.post("/update", async(req, res) => {
 
         const {onSale, productId, productName, productDescription, productPrice} = req.body
 
-        if (!productId || !onSale || !productName || !productDescription || !productPrice) {
+        if (productId == null || onSale == null || !productName || !productDescription || productPrice == null) {
             return res.status(400).send({success: false, message: "productId, onSale, productName, productDescription, and productPrice is required"})
         }
 

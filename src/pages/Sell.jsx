@@ -11,6 +11,7 @@ const Sell = ({userId}) => {
     const [creatingProduct, setCreatingProduct] = useState(false)
     const [creatingDescription, setCreatingDescription] = useState("")
     const [creatingName, setCreatingName] = useState("")
+    const [creatingDisabled, setCreatingDisabled] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
 
     const [editingProduct, setEditingProduct] = useState(false)
@@ -20,6 +21,7 @@ const Sell = ({userId}) => {
     const [editingOnSale, setEditingOnSale] = useState(false)
     const [editingPrice, setEditingPrice] = useState(0)
     const [editingPending, setEditingPending] = useState(false)
+    const [editingDisabled, setEditingDisabled] = useState(false)
     
     const [uploadStatus, setUploadStatus] = useState(false)
     const [previewUrl, setPreviewUrl] = useState('')
@@ -28,9 +30,10 @@ const Sell = ({userId}) => {
     const [productsMap, setProductsMap] = useState(new Map(null))
 
     const [createProductError, setCreateProductError] = useState(false)
+    const [createProductInfo, setCreateProductInfo] = useState(false)
     const [editProductError, setEditProductError] = useState(false)
-    
-    
+    const [editProductInfo, setEditProductInfo] = useState(false)
+
     useEffect(() => {
         const initProducts = async () => {
             try {
@@ -52,18 +55,24 @@ const Sell = ({userId}) => {
         setCreatingName("")
         setCreatingDescription("")
         setSelectedFile(null)
+        setCreateProductError(false)
+        setCreateProductInfo(false)
+        setCreatingDisabled(false)
     } 
 
     const handleEditProductModalClose = () => {
         setEditingProduct(false)
         setProductEditingId(0)
         setEditProductError(false)
+        setEditProductInfo(false)
+        setEditingDisabled(false)
     }
 
     const handleCreateProductButton = async () => {
         // add check to see if creatingProduct is not true
         if (!uploadStatus) {
             setUploadStatus(true)
+            setCreatingDisabled(true)
             const getUploadUrl = await api.post('/products/upload-url', {
                 file_name: selectedFile.name
             })
@@ -80,6 +89,7 @@ const Sell = ({userId}) => {
                 product_image: Key
             })
             setUploadStatus(false)
+            setCreateProductInfo(`Successfully uploaded ${creatingName}`)
 
         }
     }
@@ -93,15 +103,23 @@ const Sell = ({userId}) => {
                 return
             }
             setEditingPending(true)
-            const res = await api.post("/shop/update", {
+            setEditingDisabled(true)
+
+            try {
+                const res = await api.post("/shop/update", {
                 onSale: editingOnSale,
                 productId: productEditingId,
                 productName: editingName,
                 productDescription: editingDescription,
                 productPrice: editingPrice
-            })
+                })
+            } catch (err) {
+                console.log(err)
+            }
+            
             setEditingPending(false)
             setEditProductError(false)
+            setEditProductInfo(`Successfully updated ${editingName}`)
         }
     }
 
@@ -114,7 +132,7 @@ const Sell = ({userId}) => {
     }   
 
     const handleProductSaleToggle = (value) => {
-        setEditingOnSale(value)
+        setEditingOnSale(value ? 1 : 0)
     }
 
     const handleEdit = (id)  => {
@@ -158,15 +176,21 @@ const Sell = ({userId}) => {
             </div>
 
             {creatingProduct && 
-            <Modal title="Create product" onClose={handleCreateProductModalClose} error={createProductError}> 
+            <Modal 
+            title="Create product" 
+            onClose={handleCreateProductModalClose} 
+            error={createProductError}
+            info={createProductInfo}
+            > 
                 <div>
                     <ModalTextInput label="Product name" val={creatingName} input={setCreatingName}/>
                     <ModalTextInput label="Product description" val={creatingDescription} input={setCreatingDescription}/>
                     <ModalFileInput label="Product image" input={handleFileChange}/>
                 </div>
                 <button 
-                className="mt-auto rounded bg-blue-500 p-2 font-light"
+                className="mt-auto rounded bg-blue-500 p-2 font-light disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                 onClick={handleCreateProductButton}
+                disabled={creatingDisabled}
 
                 >
                     Create product
@@ -176,7 +200,12 @@ const Sell = ({userId}) => {
             </Modal>}
 
             {editingProduct && 
-            <Modal title="Edit product" onClose={handleEditProductModalClose} error={editProductError}>
+            <Modal 
+            title="Edit product" 
+            onClose={handleEditProductModalClose} 
+            error={editProductError}
+            info={editProductInfo}
+            >
                 <div>
                     <ModalTextInput label="Product name" val={editingName} input={setEditingName}/>
                     <ModalTextInput label="Product description" val={editingDescription} input={setEditingDescription}/>
@@ -205,9 +234,9 @@ const Sell = ({userId}) => {
                     </div>
                 </div>
                 <button 
-                className="mt-auto rounded bg-blue-500 p-2 font-light"
+                className="mt-auto rounded bg-blue-500 p-2 font-light disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                 onClick={handleEditProductButton}
-
+                disabled={editingDisabled}
                 >
                     Update product
                 </button>

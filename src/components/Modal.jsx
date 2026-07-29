@@ -1,4 +1,4 @@
-const Modal = ({title, onClose, error, children}) => {
+const Modal = ({title, onClose, error, info, children}) => {
 
 
     return (
@@ -9,6 +9,7 @@ const Modal = ({title, onClose, error, children}) => {
                     <button onClick={onClose}>close</button>
                 </div>
                 {error && <div className="text-red-500 mt-5">❌ Error: {error}</div>}
+                {info && <div className="text-blue-500 mt-5">ℹ️ Info: {info}</div>}
                 <div className="flex flex-col flex-1 p-5">
                     {children}
                 </div>
