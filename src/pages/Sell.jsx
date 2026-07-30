@@ -12,6 +12,7 @@ const Sell = ({userId}) => {
     const [creatingDescription, setCreatingDescription] = useState("")
     const [creatingName, setCreatingName] = useState("")
     const [creatingDisabled, setCreatingDisabled] = useState(false)
+    const [creatingButtonText, setCreatingButtonText] = useState("Create product")
     const [selectedFile, setSelectedFile] = useState(null)
 
     const [editingProduct, setEditingProduct] = useState(false)
@@ -22,6 +23,7 @@ const Sell = ({userId}) => {
     const [editingPrice, setEditingPrice] = useState(0)
     const [editingPending, setEditingPending] = useState(false)
     const [editingDisabled, setEditingDisabled] = useState(false)
+    const [editingButtonText, setEditingButtonText] = useState("Update product")
     
     const [uploadStatus, setUploadStatus] = useState(false)
     const [previewUrl, setPreviewUrl] = useState('')
@@ -193,7 +195,7 @@ const Sell = ({userId}) => {
                 disabled={creatingDisabled}
 
                 >
-                    Create product
+                    {uploadStatus ? "Creating product..." : "Create product"}
                 </button>
                 
                 
@@ -238,7 +240,7 @@ const Sell = ({userId}) => {
                 onClick={handleEditProductButton}
                 disabled={editingDisabled}
                 >
-                    Update product
+                    {editingPending ? "Updating product..." : "Update product"}
                 </button>
             </Modal>}
         </div>
