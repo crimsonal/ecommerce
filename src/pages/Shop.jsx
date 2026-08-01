@@ -9,6 +9,7 @@ const Shop = ({user}) => {
     const [shops, setShops] = useState([])
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [loggedOn, setLoggedOn] = useState(false)
     const navigate = useNavigate()
     // const items = [
     //     {name: "Pencil", price: 1.99, description:"Writing utensil"},
@@ -17,6 +18,12 @@ const Shop = ({user}) => {
     const handleSearchText = (event) => {
         setSearchText(event.target.value)
     }
+
+    useEffect(() => {
+        const checkSignIn = () => {
+            setLoggedOn(user !== null ? true : false)
+        }
+    }, [])
 
     const handleSellButton = (event) => {
         if (!user) {
@@ -29,8 +36,6 @@ const Shop = ({user}) => {
 
     useEffect(() => {
         async function loadShop() {
-            if (!user)
-                return;
             const shop_data = await api.get("/shop")
             let productsList = []
             setShops(shop_data.data.shop)
@@ -84,10 +89,10 @@ const Shop = ({user}) => {
         <div className="flex flex-col w-full h-full overflow-hidden flex-1">
             
             <div className="relative flex items-center justify-between h-16 px-4">
-                <button 
+                {loggedOn && <button 
                 className="bg-green-500 p-3 px-12 rounded-md mt-10"
                 onClick={handleSellButton}    
-                >Sell</button>
+                >Sell</button>}
                 <h1 className="absolute left-1/2 -translate-x-1/2 text-2xl bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500 text-transparent justify-center font-[inter] mt-10 font-semibold">What are you shopping for today?</h1>
             </div>
             

@@ -31,8 +31,8 @@ app.get('/', (req, res) => {
 app.use(cors())
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-app.use("/api/products", auth, productRouters)
-app.use("/api/shop", auth, shopRouters)
+app.use("/api/shop", shopRouters)
+app.use("/api/products", productRouters)
 app.use("/api/user", auth, profileRouters)
 
 app.listen(PORT, () => {

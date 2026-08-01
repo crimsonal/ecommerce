@@ -1,5 +1,6 @@
 import e from "express"
 import { pool } from "../scripts/connection.js"
+import auth from "../middleware/auth.js";
 import {doesUserExist} from "../db/user_module.js"
 import {S3Client, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3"
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -21,7 +22,7 @@ const s3 = new S3Client({
     }
 })
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     try {
         const {product_name, product_description, product_image} = req.body 
         if (!product_name || !product_description || !product_image) {
@@ -64,7 +65,7 @@ router.get("/get/:id", async(req, res) => {
     }
 })
 
-router.delete("/", async (req, res) => { // TODO: path parameter for id
+router.delete("/", auth, async (req, res) => { // TODO: path parameter for id
 
     try {
         const {product_id} = req.body

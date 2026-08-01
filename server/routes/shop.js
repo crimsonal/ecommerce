@@ -1,9 +1,11 @@
+
 import e from "express";
+import auth from "../middleware/auth.js";
 import { userOwnsProduct, updateProduct } from "../db/product_module.js";
 import {addProductToShop, getShop, productExists, removeProductFromShop, updatePrice} from "../db/shop_module.js"
 const router = e.Router()
 
-router.post("/", async(req, res) => {
+router.post("/", auth, async(req, res) => {
 
     try {
 
@@ -34,7 +36,7 @@ router.post("/", async(req, res) => {
     }
 })
 
-router.post("/update", async(req, res) => {
+router.post("/update", auth, async(req, res) => {
 
     try {
 
@@ -86,7 +88,7 @@ router.post("/update", async(req, res) => {
     }
 })
 
-router.delete("/", async(req, res) => {
+router.delete("/", auth, async(req, res) => {
 
     try {
 
