@@ -5,7 +5,11 @@ const ItemCard = ({
     name,
     price,
     description,
-    seller
+    seller,
+    shopId,
+    productId,
+    productObj,
+    handleAdd
 }) => {
 
     const [source, setSource] = useState(null)
@@ -49,7 +53,10 @@ const ItemCard = ({
                         {usdFormatter.format(price)}
                     </p>
 
-                    <button className="mt-3 w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700 transition">
+                    <button 
+                    className="mt-3 w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700 transition"
+                    onClick={(e) => handleAdd(productId, shopId, productObj)}
+                    >
                         Add to Cart
                     </button>
 

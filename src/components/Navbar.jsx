@@ -1,28 +1,18 @@
 import {Link} from "react-router-dom"
 import { useState, useEffect } from "react"
 import Dropdown from "./Dropdown.jsx"
+import { getCartSize } from "../utils/cart.js"
 
 const Navbar = ({cart, user, onLogout, initial}) => {
   const [open, setOpen] = useState(false)
-  
-  // const [initial, setInitital] = useState("👤")
-  // const getInitial = () => {
-  //   console.log("get initital")
-  //   if (!user)
-  //     return;
-
-  //   if (!user.username)
-  //     return;
-
-  //   const username = user.username 
-  //   const initial = username.substring(0, 0).toUpperCase()
-
-  //   setInitital(initial)
-  // }
-
-  // useEffect( () => {
-  //   getInitial()
-  // }, [])
+  const [cartSize, setCartSize] = useState(0)
+  const cartQtyList = cart.map(item => item.qty)
+  useEffect(() => {
+    const handleCart = () => {
+      setCartSize(getCartSize(cart))
+    }
+    handleCart()
+  }, [cart])
   return (
     <nav className="top-0 left-0 z-50 flex h-10 w-full items-center justify-between bg-blue-500 shadow-md">
       <div className="navbar-left mx-3 font-bold">
@@ -50,7 +40,7 @@ const Navbar = ({cart, user, onLogout, initial}) => {
               <div className="relative w-max hover:-translate-y-1 transition-transform duration-300 ease-in-out">
                 <img src="/assets/shopping-bag.png" className="block w-8"></img>
                 <div className="absolute inset-0 flex -ml-1.5 -mb-1.5 items-center justify-center">
-                  <h2 className="text-white font-light">0</h2>
+                  <h2 className="text-white font-light">{cartSize}</h2>
                 </div>
               </div>
             </Link>

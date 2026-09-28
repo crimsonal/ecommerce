@@ -5,9 +5,8 @@ import ModalFileInput from "../components/ModalFileInput.jsx";
 import ModalCheckboxInput from "../components/ModalCheckboxInput.jsx";
 import api from "../api/client.js"
 import axios from "axios";
-import { getToken } from "../api/auth.js";
 import { useState, useEffect } from "react"
-const Sell = ({userId}) => {
+const Sell = ({userId, cart}) => {
     const [creatingProduct, setCreatingProduct] = useState(false)
     const [creatingDescription, setCreatingDescription] = useState("")
     const [creatingName, setCreatingName] = useState("")
@@ -28,7 +27,7 @@ const Sell = ({userId}) => {
 
     const [products, setProducts] = useState([])
     const [productsMap, setProductsMap] = useState(new Map(null))
-
+    
     const [createProductError, setCreateProductError] = useState(false)
     const [createProductInfo, setCreateProductInfo] = useState(false)
     const [editProductError, setEditProductError] = useState(false)

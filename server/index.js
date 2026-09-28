@@ -4,7 +4,9 @@ import productRouters from "./routes/products.js"
 import shopRouters from "./routes/shop.js"
 import auth from "./middleware/auth.js"
 import profileRouters from "./routes/profile.js"
+import cartRouters from "./routes/cart.js"
 import cors from "cors"
+import session from "express-session"
 import {pool} from "./scripts/connection.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,8 +30,9 @@ app.get('/', (req, res) => {
 });
 
 
-app.use(cors())
+// app.use(cors())
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use("/api/shop", shopRouters)
 app.use("/api/products", productRouters)

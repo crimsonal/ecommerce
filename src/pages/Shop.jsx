@@ -4,26 +4,25 @@ import ItemCard from "../components/ItemCard"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import Searchbar from "../components/Searchbar.jsx"
-const Shop = ({user}) => {
+import { addProductToCart, incrementProductInCart, productExistsInCart } from "../utils/cart.js"
+const Shop = ({user, cart, setCart}) => {
     const [searchText, setSearchText] = useState("")
     const [shops, setShops] = useState([])
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [loggedOn, setLoggedOn] = useState(false)
     const navigate = useNavigate()
-    // const items = [
-    //     {name: "Pencil", price: 1.99, description:"Writing utensil"},
 
-    // ]
     const handleSearchText = (event) => {
         setSearchText(event.target.value)
     }
 
     useEffect(() => {
         const checkSignIn = () => {
-            setLoggedOn(user !== null ? true : false)
+            setLoggedOn(user !== null)
         }
-    }, [])
+        checkSignIn()
+    }, [user])
 
     const handleSellButton = (event) => {
         if (!user) {
@@ -35,20 +34,35 @@ const Shop = ({user}) => {
     }
 
     useEffect(() => {
-        async function loadShop() {
-            const shop_data = await api.get("/shop")
-            let productsList = []
-            setShops(shop_data.data.shop)
-            for (const shop of shop_data.data.shop) {
-                const product = await api.get(`/products/get/${shop.product_id}`)
-                productsList = [...productsList, product.data]
-                
-            }
-            setProducts(productsList)
-            setLoading(false)
+    async function loadShop() {
+        try {
+            const shopData = await api.get("/shop");
+
+            setShops(shopData.data.shop);
+
+            const productsList = await Promise.all(
+                shopData.data.shop.map(async (shop) => {
+                    const product = await api.get(
+                        `/products/get/${shop.product_id}`
+                    );
+
+                    return {
+                        ...product.data,
+                        price: shop.price
+                    };
+                })
+            );
+
+            setProducts(productsList);
+        } catch (error) {
+            console.error("Failed to load shop:", error);
+        } finally {
+            setLoading(false);
         }
-        loadShop()
-    }, [user])
+    }
+
+        loadShop();
+    }, [user]);
 
     const getProduct = (id) => {
         for (const product of products) {
@@ -83,7 +97,14 @@ const Shop = ({user}) => {
         return null
     }
 
-
+    const addItemToCart = (productId, shopId, obj) => {
+        const productItem = productExistsInCart(productId, cart)
+        if (productItem) {
+            incrementProductInCart(productId, cart, setCart)
+        } else {
+            addProductToCart(productId, obj, cart, setCart)
+        }
+    }
 
     return (
         <div className="flex flex-col w-full h-full overflow-hidden flex-1">
@@ -100,7 +121,17 @@ const Shop = ({user}) => {
             {!loading && <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {shops.map((product) => (
                     
-                    <ItemCard key= {product.shop_id } name={getProductName(product.product_id)} price={product.price} description={getProductDescription(product.product_id)} icon={getProductImage(product.product_id)}/>
+                    <ItemCard 
+                    key= {product.shop_id } 
+                    name={getProductName(product.product_id)} 
+                    price={product.price} 
+                    description={getProductDescription(product.product_id)} 
+                    icon={getProductImage(product.product_id)}
+                    productId={product.product_id}
+                    shopId = {product.shop_id}
+                    productObj={getProduct(product.product_id)}
+                    handleAdd={addItemToCart}
+                    />
                 ))}
             </div>}
             

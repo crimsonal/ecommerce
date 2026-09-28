@@ -18,6 +18,10 @@ function App() {
   const [user, setUser] = useState(null)
   const [userId, setUserId] = useState(null)
   const [initial, setInitial] = useState("👤")
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('shoppingCart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  })
   const navigate = useNavigate()
   // useEffect(() => {console.log(user)}, [user]) // verify
   useEffect( () => {
@@ -43,6 +47,10 @@ function App() {
     
   }, [])
 
+  useEffect(() => {
+    localStorage.setItem('shoppingCart', JSON.stringify(cart));
+  }, [cart]);
+
 
   const handleLogout = () => {
     clearToken()
@@ -52,16 +60,16 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen scrollbar-none overflow-hidden">
-      <Navbar user={user} initial={initial} onLogout={handleLogout}></Navbar>
+      <Navbar user={user} initial={initial} onLogout={handleLogout} cart={cart}></Navbar>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/shop" element={<Shop user={user}/>} />
+        <Route path="/shop" element={<Shop user={user} cart={cart} setCart={setCart}/>} />
         <Route path="/about" element={<About />} /> 
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login onLoggedIn={setUser} setInitial={setInitial}/>} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/sell" element={<Sell userId={userId}/>} />
+        <Route path="/cart" element={<Cart cart={cart}/>} />
+        <Route path="/sell" element={<Sell userId={userId} cart={cart}/>} />
       </Routes>
     </div>
   )
