@@ -3,3 +3,6 @@ import auth from "../middleware/auth.js";
 
 const router = e.Router();
 
+
+
+export default router

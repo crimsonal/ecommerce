@@ -8,6 +8,7 @@ import cartRouters from "./routes/cart.js"
 import cors from "cors"
 import session from "express-session"
 import {pool} from "./scripts/connection.js"
+import cookieParser from 'cookie-parser';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
